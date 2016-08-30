@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package mitgifdownloader;
+package mitgitgitdownloader;
 
+import converter.Converter;
 import apicalls.Feelings;
 import apicalls.MitApi;
 import com.google.gson.JsonArray;
@@ -26,8 +27,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import mitgifdownloader.language.Language;
-import mitgifdownloader.language.Translation;
+import language.Language;
+import language.Translation;
 import utils.ObservableString;
 
 /**

@@ -11,8 +11,8 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
 import java.util.Objects;
-import mitgifdownloader.language.Language;
-import mitgifdownloader.language.Translation;
+import language.Language;
+import language.Translation;
 
 /**
  *

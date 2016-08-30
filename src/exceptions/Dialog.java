@@ -19,9 +19,9 @@ import javafx.scene.layout.VBoxBuilder;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import mitgifdownloader.MitGifGifDownloader;
-import mitgifdownloader.language.Language;
-import mitgifdownloader.language.Translation;
+import mitgitgitdownloader.MitGifGifDownloader;
+import language.Language;
+import language.Translation;
 
 /**
  *

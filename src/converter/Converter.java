@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package mitgifdownloader;
+package converter;
 
 import apicalls.Feelings.Feel;
 import com.google.gson.Gson;
@@ -30,8 +30,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import mitgifdownloader.language.Language;
-import mitgifdownloader.language.Translation;
+import language.Language;
+import language.Translation;
+import mitgitgitdownloader.MitGifGifDownloader;
 import pojos.ContentData;
 import pojos.GifMetadata;
 
@@ -85,7 +86,7 @@ public class Converter {
         return gif;
     }
 
-    void writeToFile(Feel feel, String page) {
+    public void writeToFile(Feel feel, String page) {
         if (gifs == null) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         } else {

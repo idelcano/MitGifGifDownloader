@@ -18,11 +18,10 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.VBoxBuilder;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
-import javafx.stage.Stage;
+import javafx.stage.Stage; 
 import mitgitgitdownloader.MitGifGifDownloader;
 import language.Language;
-import language.Translation;
-
+import language.Translation; 
 /**
  *
  * @author ina

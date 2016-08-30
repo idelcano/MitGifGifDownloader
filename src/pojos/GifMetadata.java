@@ -10,9 +10,9 @@ import apicalls.Feelings.Feel;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
-import java.util.Objects;
+import java.util.Objects; 
 import language.Language;
-import language.Translation;
+import language.Translation; 
 
 /**
  *

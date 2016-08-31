@@ -9,18 +9,25 @@ import converter.Converter;
 import apicalls.Feelings;
 import apicalls.MitApi;
 import com.google.gson.JsonArray;
+import converter.SQLiteJDBC;
 import exceptions.Dialog;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
+import static javafx.application.Application.STYLESHEET_MODENA;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.GridPane;
@@ -39,7 +46,12 @@ public class MitGifGifDownloader extends Application {
 
     public static ObservableString status;
     Label directory;
+    
+    //Folder to download and create all the data
     File selectedDirectory;
+    
+    //Flag to allow or disable the download of images
+    public boolean downloadImages;
     public static Label statusLabel;
     @Override
     public void start(Stage primaryStage) {
@@ -54,6 +66,18 @@ public class MitGifGifDownloader extends Application {
         Button btn = createSelectButton(primaryStage);
         Button btnDownload = createDownloadButton();
 
+        
+        CheckBox checkDownload= new CheckBox(); 
+        checkDownload.setText(Language.getString(Language.lang, Translation.Strings.CHECKDOWNLOAD));
+        checkDownload.setSelected(true);
+        downloadImages=true;
+        checkDownload.selectedProperty().addListener(new ChangeListener<Boolean>() {
+
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                downloadImages=newValue;
+            }
+        });
         GridPane grid = new GridPane();
         grid.setPadding(new Insets(10, 10, 10, 10));
         grid.setVgap(5);
@@ -62,14 +86,16 @@ public class MitGifGifDownloader extends Application {
         grid.getChildren().add(directoryLabel);
         GridPane.setConstraints(directory, 1, 0);
         grid.getChildren().add(directory);
-        GridPane.setConstraints(btn, 0, 1);
+        GridPane.setConstraints(checkDownload, 0, 1);
+        grid.getChildren().add(checkDownload);
+        GridPane.setConstraints(btn, 0, 2);
         grid.getChildren().add(btn);
-        GridPane.setConstraints(btnDownload, 1, 1);
+        GridPane.setConstraints(btnDownload, 1, 2);
         grid.getChildren().add(btnDownload);
-        GridPane.setConstraints(statusLabel, 0, 2);
+        GridPane.setConstraints(statusLabel, 0, 3);
         grid.getChildren().add(statusLabel);
         root.getChildren().add(grid);
-        Scene scene = new Scene(root, 500, 75);
+        Scene scene = new Scene(root, 500, 100);
         primaryStage.setTitle(Language.getString(Language.lang, Translation.Strings.APP_TITLE));
         primaryStage.setScene(scene); 
         primaryStage.show(); 
@@ -107,9 +133,17 @@ public class MitGifGifDownloader extends Application {
 
             @Override
             public void handle(ActionEvent event) {
+                
+                try {
+                    SQLiteJDBC.createDB(selectedDirectory.getAbsolutePath()+"/");
+                } catch (SQLException ex) {
+                    Logger.getLogger(MitGifGifDownloader.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(MitGifGifDownloader.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 updateMessage(Language.getString(Language.lang, Translation.Strings.STATUS)
                         + Language.getString(Language.lang, Translation.Strings.START));
-                downloadButonAction();
+                downloadButonAction(downloadImages);
             }
 
         });
@@ -117,13 +151,22 @@ public class MitGifGifDownloader extends Application {
     }
     public Feelings.Feel feeling;
 
-    private void downloadButonAction() {
+    private void downloadButonAction(boolean downloadImages) {
         for (Feelings.Feel feel : Feelings.Feel.values()) {
+            try {
+                Connection c = SQLiteJDBC.connectDB();
+                SQLiteJDBC.insertFeel(c, feel);
+                c.close();
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(MitGifGifDownloader.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SQLException ex) {
+                Logger.getLogger(MitGifGifDownloader.class.getName()).log(Level.SEVERE, null, ex);
+            }
             updateMessage(Language.getString(Language.lang, Translation.Strings.STATUS)
                     + Language.getString(Language.lang, Translation.Strings.DOWNLOADING) + " "
                     + Translation.getStringFromFeelings(Language.lang, feel));
             try {
-                downloadMetaData(feel);
+                downloadMetaData(feel,downloadImages);
             } catch (IOException ex) {
                 Dialog.showExceptionMessage(ex);
                 Logger.getLogger(MitGifGifDownloader.class.getName()).log(Level.SEVERE, null, ex);
@@ -134,7 +177,7 @@ public class MitGifGifDownloader extends Application {
         }
     }
 
-    private void downloadMetaData(Feelings.Feel feel) throws IOException {
+    private void downloadMetaData(Feelings.Feel feel, boolean downloadImages) throws IOException {
         Converter converter = new Converter(directory.getText());
         JsonArray results;
         MitApi apicalls = new MitApi();
@@ -146,7 +189,7 @@ public class MitGifGifDownloader extends Application {
             for (int i = 0; i < results.size(); i++) {
                 converter.convertJsonToPojo(results.get(i).getAsJsonObject(), feel);
             }
-            converter.writeToFile(feel, String.valueOf(results.size() + apicalls.count));
+            converter.writeToFile(feel, String.valueOf(results.size() + apicalls.count), downloadImages);
             apicalls.count += results.size();
         } while (apicalls.count == total);
     }

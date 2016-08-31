@@ -16,7 +16,7 @@ public class Translation {
     public enum Strings {
         STATUS, DOWNLOAD, DOWNLOADING, SELECT_FOLDER, FINISH, DIRECTORY, APP_TITLE, START, PROCESSING,
         HAPPINESS, SADNESS, AMUSEMENT, ANGER, CONTEMPT, CONTENTMENT, DISGUST,
-        EMBARRASSMENT, EXCITEMENT, FEAR, GUILT, PLEASURE, PRIDE, RELIEF, SATISFACTION, CONVERTING, OF,SAVING,CANCEL,EXIT;
+        EMBARRASSMENT, EXCITEMENT, FEAR, GUILT, PLEASURE, PRIDE, RELIEF, SATISFACTION, CONVERTING, OF,SAVING,CANCEL,EXIT,CHECKDOWNLOAD;
 
     }
 
@@ -119,6 +119,13 @@ public class Translation {
                         return "Salir";
                     case Language.ENG:
                         return "Exit";
+                }
+            case CHECKDOWNLOAD:
+                switch (lang) {
+                    case Language.ESP:
+                        return "Descargar imagenes y gifs (5gb+)";
+                    case Language.ENG:
+                        return "Download images and gifs (5gb+)";
                 }
                 
                 

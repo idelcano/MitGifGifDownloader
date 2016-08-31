@@ -9,10 +9,8 @@ import apicalls.Feelings.Feel;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import exceptions.Dialog;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -24,12 +22,11 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import language.Language;
 import language.Translation;
 import mitgitgitdownloader.MitGifGifDownloader;
@@ -83,10 +80,26 @@ public class Converter {
         GifMetadata gif = gson.fromJson(jsonMain.toString(), GifMetadata.class);
         gif.setFeel(feel);
         addGif(gif);
+        Connection c=null;
+        try {
+            c = SQLiteJDBC.connectDB();
+            SQLiteJDBC.convertGifMetadata(c, gif);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Converter.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(Converter.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        finally{
+            try {
+                c.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(Converter.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         return gif;
     }
 
-    public void writeToFile(Feel feel, String page) {
+    public void writeToFile(Feel feel, String page, boolean downloadImages) {
         if (gifs == null) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         } else {
@@ -107,7 +120,9 @@ public class Converter {
                 Logger.getLogger(Converter.class.getName()).log(Level.SEVERE, null, ex);
             }
             try {
-                downloadAndSaveImages(gifs);
+                if (downloadImages) {
+                    downloadAndSaveImages(gifs);
+                }
             } catch (IOException ex) {
                 if (!ex.getMessage().contains("403")) {
                     Dialog.showExceptionMessage(ex);
